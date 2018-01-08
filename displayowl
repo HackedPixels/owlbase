@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#TODO: Add better path control.
+cat $HOME/owlbase/.currentowl
+echo -e "Welcome, \033[31;4m$USER\033[0m to jans System."

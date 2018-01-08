@@ -1,0 +1,9 @@
+changeowl : change the owl.
+	ARGS
+		c - cyclic (increment by one)
+		r - random (get a random owl)
+		l - list all the owl files
+		L - list all the owl files and display them
+		v - print the version
+		s - specific (add id)
+		

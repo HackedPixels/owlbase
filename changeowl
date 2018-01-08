@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# yes. owls. yes.
+
+# args:
+#  r - random
+#  c - cyclic
+#  s - specific, followed by owlid
+#  v - version
+#  l - list all owlfiles
+#  L - list all owlfiles with images
+
+OWLPATH="$HOME/owlbase"
+VERSION="1.0.0"
+OWLNO=`cat "$OWLPATH/.owlno"`
+
+if [ $# -eq 0 ]; then
+	echo "reference is 'owlhelp.txt'"
+	exit 0
+fi
+
+ARGBUFFER=$1
+
+for (( argnum=0; argnum<${#ARGBUFFER}; argnum++ )); do
+	arg="${ARGBUFFER:$argnum:1}"
+	case "$arg" in
+		r)
+			owls=()
+			i=0
+			for entry in "$OWLPATH/owls"/*; do
+				owls[$i]="$entry"
+				let "i = i + 1"
+			done
+
+			owlselected=${owls[$RANDOM % ${#owls[@]}]}
+			cat $owlselected > "$OWLPATH/.currentowl"
+			basename $owlselected > "$OWLPATH/.owlno"
+			;;
+		c)
+			let "OWLNO = OWLNO + 1"
+			owlselected="$OWLPATH/owls/$OWLNO"
+			cat $owlselected > "$OWLPATH/.currentowl" 2>/dev/null
+		
+			if [ $? -ne 0 ]; then
+				let "OWLNO = 0"
+				owlselected="$OWLPATH/owls/$OWLNO"
+				cat $owlselected > "$OWLPATH/.currentowl"
+			fi
+
+			echo $OWLNO > "$OWLPATH/.owlno"
+			;;
+		s)
+			owlselected="$OWLPATH/owls/$2"
+			cat $owlselected > "$OWLPATH/owls/$OWLNO" 2>/dev/null
+			if [ $? -ne 0 ]; then
+				echo "Error: That owl does not exist!\nDefaulting to 0"
+				owlselected="$OWLPATH/owls/0"
+				cat $owlselected > "$OWLPATH/.currentowl"
+			fi
+			#TODO: implement notation of current owl.
+			;;
+		v)
+			echo "$VERSION"
+			;;
+		l)
+			for entry in "$OWLPATH/owls"/*; do
+				echo "$entry"
+			done
+			;;
+		L)
+			for entry in "$OWLPATH/owls"/*; do
+				echo "$entry"
+				cat "$entry"
+			done
+			;;
+		*)
+			echo "lolwut?"
+			;;
+	esac
+done
